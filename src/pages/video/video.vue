@@ -19,7 +19,9 @@
       <template v-else-if="videos.isError.value">
         {{ videos.error.value }}
       </template>
-      <template v-else> Loading… </template>
+      <template v-else>
+        Loading…
+      </template>
     </div>
     <div :class="$style.content">
       <template v-if="id">

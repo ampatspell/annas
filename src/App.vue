@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { onMounted } from 'vue';
   import Button from './components/button.vue';
   import Render from './components/render.vue';
   import './global.css';

@@ -20,6 +20,7 @@ export default defineConfigWithVueTs(
   {
     name: 'app/vue-rules',
     rules: {
+      'vue/max-attributes-per-line': 'off',
       'vue/multi-word-component-names': 'off',
       'vue/no-template-shadow': 'off',
       'vue/no-dupe-keys': 'off',
