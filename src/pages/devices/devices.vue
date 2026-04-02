@@ -10,10 +10,14 @@
 
 <template>
   <div :class="$style.page">
-    <template v-if="devices === undefined"> Loading… </template>
+    <template v-if="devices === undefined">
+      Loading…
+    </template>
     <template v-else>
       <template v-for="device in devices" :key="device.deviceId">
-        <div class="row">{{ device.kind }} {{ device.label }} {{ device.deviceId }} {{ device.deviceId }}</div>
+        <div class="row">
+          {{ device.kind }} {{ device.label }} {{ device.deviceId }} {{ device.deviceId }}
+        </div>
       </template>
     </template>
   </div>

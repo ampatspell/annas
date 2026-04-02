@@ -41,9 +41,13 @@
     > .header {
       padding: 10px;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       gap: 4px;
       > .video {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         cursor: pointer;
         &.selected {
           font-weight: 600;
@@ -69,9 +73,11 @@
         align-items: center;
         justify-content: center;
         > video {
+          min-width: 100%;
+          min-height: 100%;
           max-width: 100%;
           max-height: 100%;
-          object-fit: contain;
+          object-fit: cover;
         }
       }
     }
