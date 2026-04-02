@@ -1,20 +1,18 @@
-<script lang="ts">
-</script>
-
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+  import { ref } from 'vue';
+  import Button from '../../components/button.vue';
 
   const stream = ref<MediaStream>();
   const error = ref<unknown>();
 
-  onMounted(async () => {
+  const onLoad = async () => {
     try {
       stream.value = await navigator.mediaDevices.getUserMedia({ video: true });
     } catch(err) {
       console.log(err);
       error.value = err;
     }
-  });
+  }
 </script>
 
 <template>
@@ -28,7 +26,7 @@ import { onMounted, ref } from 'vue';
       </div>
     </template>
     <template v-else>
-      Loading…
+      <Button label="Load" :on-click="onLoad" />
     </template>
   </div>
 </template>
