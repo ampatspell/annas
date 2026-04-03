@@ -18,6 +18,7 @@
 
 <style module lang="postcss">
   .button {
+    user-select: none;
     appearance: none;
     outline: none;
     border: none;

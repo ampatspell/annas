@@ -1,6 +1,6 @@
 import { computed, onMounted, ref } from "vue";
 
-const URL = "http://localhost:3000";
+const URL = "http://localhost:3000/videos";
 
 export const useVideos = () => {
   const isLoaded = ref(false);

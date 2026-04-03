@@ -1,4 +1,4 @@
-import { computed, inject, ref, shallowRef, type InjectionKey, type Plugin } from "vue";
+import { inject, ref, type InjectionKey, type Plugin } from "vue";
 
 const createCamera = () => {
   const stream = ref<MediaStream>();

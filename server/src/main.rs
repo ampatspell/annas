@@ -90,7 +90,7 @@ async fn main() {
         .allow_headers([AUTHORIZATION, CONTENT_TYPE]);
 
     let app = Router::new()
-        .route("/", get(index))
+        .route("/videos", get(index))
         .route("/videos/{id}", get(get_video))
         .route("/ws", any(websocket))
         .layer(cors_layer)
