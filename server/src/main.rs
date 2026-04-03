@@ -14,10 +14,7 @@ use axum::{
     routing::{any, get},
 };
 use axum_extra::{TypedHeader, headers::Range};
-use tokio::{
-    net::TcpListener,
-    sync::{Mutex, broadcast::Sender},
-};
+use tokio::{net::TcpListener, sync::broadcast::Sender};
 use tower_http::cors::{Any, CorsLayer};
 
 use crate::{
@@ -30,7 +27,7 @@ pub mod video;
 
 #[derive(Clone)]
 struct AppState {
-    tx: Arc<Mutex<Sender<ChannelMessage>>>,
+    tx: Arc<Sender<ChannelMessage>>,
 }
 
 impl AppState {}
@@ -46,7 +43,7 @@ async fn get_video(Path(id): Path<String>, range: Option<TypedHeader<Range>>) ->
 }
 
 async fn handle_websocket(mut socket: WebSocket, state: AppState) {
-    let mut rx = state.tx.lock().await.subscribe();
+    let mut rx = state.tx.subscribe();
 
     let text = Message::Text(format!("Hey there").into());
     match socket.send(text).await {
@@ -82,7 +79,7 @@ async fn websocket(ws: WebSocketUpgrade, State(state): State<AppState>) -> impl 
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    let tx = Arc::new(Mutex::new(create_gpio()));
+    let tx = create_gpio();
 
     let cors_layer = CorsLayer::new()
         .allow_methods(Any)
