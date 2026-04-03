@@ -1,32 +1,32 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
-  import Button from '../../components/button.vue'
+  import { useCamera } from '@/lib/camera';
+  import { computed, useTemplateRef, watchEffect } from 'vue'
 
-  const stream = ref<MediaStream>()
-  const error = ref<unknown>()
+  const camera = useCamera();
+  const stream = computed(() => camera.stream.value);
+  const error = computed(() => camera.error.value);
 
-  const onLoad = async () => {
-    try {
-      stream.value = await navigator.mediaDevices.getUserMedia({ video: true })
-    } catch (err) {
-      console.log(err)
-      error.value = err
+  const video = useTemplateRef('video');
+
+  watchEffect(() => {
+    if(video.value && stream.value) {
+      video.value.srcObject = stream.value;
     }
-  }
+  });
 </script>
 
 <template>
   <div :class="$style.page">
     <template v-if="error">
-      {{ error }}
+      Error: {{ error }}
     </template>
     <template v-else-if="stream">
       <div :class="$style.video">
-        <video ref="ref" muted autoPlay />
+        <video ref="video" muted autoPlay />
       </div>
     </template>
     <template v-else>
-      <Button label="Load" :on-click="onLoad" />
+      Loading…
     </template>
   </div>
 </template>
@@ -55,6 +55,7 @@
         max-width: 100%;
         max-height: 100%;
         object-fit: cover;
+        transform: scaleX(-1);
       }
     }
   }

@@ -5,7 +5,6 @@
   import { useNavigation } from './lib/navigation'
   import Camera from './pages/camera/camera.vue'
   import Devices from './pages/devices/devices.vue'
-  import Stream from './pages/stream/stream.vue'
   import Video from './pages/video/video.vue'
 
   const navigation = useNavigation()
@@ -13,7 +12,6 @@
   const onVideo = () => navigation.transitionTo({ component: Video, props: {} })
   const onDevices = () => navigation.transitionTo({ component: Devices, props: {} })
   const onCamera = () => navigation.transitionTo({ component: Camera, props: {} })
-  const onStream = () => navigation.transitionTo({ component: Stream, props: {} })
 </script>
 
 <template>
@@ -23,7 +21,6 @@
       <Button label="Video" :on-click="onVideo" />
       <Button label="Devices" :on-click="onDevices" />
       <Button label="Camera" :on-click="onCamera" />
-      <Button label="Stream" :on-click="onStream" />
     </div>
     <div :class="$style.content">
       <Render :model="navigation.page.value" />
