@@ -1,6 +1,5 @@
 use axum::{
     Json, Router,
-    body::Body,
     extract::Path,
     http::{
         HeaderValue, StatusCode,
@@ -9,8 +8,10 @@ use axum::{
     response::IntoResponse,
     routing::get,
 };
+use axum_extra::{TypedHeader, headers::Range};
+use axum_range::{KnownSize, Ranged};
 use std::fs::read_dir;
-use tokio_util::io::ReaderStream;
+use tokio::fs::File;
 use tower_http::cors::{Any, CorsLayer};
 
 fn load_videos() -> Vec<String> {
@@ -23,10 +24,10 @@ fn load_videos() -> Vec<String> {
     names
 }
 
-pub async fn get_video_stream(id: String) -> impl IntoResponse {
+pub async fn get_video_stream(id: String, range: Option<TypedHeader<Range>>) -> impl IntoResponse {
     let path = format!("../videos/{id}");
 
-    let file = match tokio::fs::File::open(&path).await {
+    let file = match File::open(&path).await {
         Ok(file) => file,
         Err(err) => return Err((StatusCode::NOT_FOUND, format!("File not found: {}", err))),
     };
@@ -41,15 +42,13 @@ pub async fn get_video_stream(id: String) -> impl IntoResponse {
         }
     };
 
-    let stream = ReaderStream::new(file);
-    let body = Body::from_stream(stream);
+    let body = KnownSize::file(file).await.unwrap();
+    let range = range.map(|TypedHeader(range)| range);
 
-    let headers = [
-        (header::CONTENT_TYPE, content_type),
-        (header::TRANSFER_ENCODING, "chunked"),
-    ];
-
-    Ok((headers, body))
+    Ok((
+        [(header::CONTENT_TYPE, content_type)],
+        Ranged::new(range, body),
+    ))
 }
 
 async fn index() -> Json<Vec<String>> {
@@ -57,8 +56,8 @@ async fn index() -> Json<Vec<String>> {
     Json(videos)
 }
 
-async fn get_video(Path(id): Path<String>) -> impl IntoResponse {
-    let res = get_video_stream(id).await;
+async fn get_video(Path(id): Path<String>, range: Option<TypedHeader<Range>>) -> impl IntoResponse {
+    let res = get_video_stream(id, range).await;
     res
 }
 
