@@ -75,7 +75,6 @@ async fn handle_websocket(mut socket: WebSocket, state: AppState) {
 }
 
 async fn websocket(ws: WebSocketUpgrade, State(state): State<AppState>) -> impl IntoResponse {
-    println!("websocket");
     ws.on_upgrade(move |socket| handle_websocket(socket, state))
 }
 
