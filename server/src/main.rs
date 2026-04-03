@@ -94,5 +94,6 @@ async fn main() {
         .with_state(AppState { tx });
 
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    println!("Listening on {:?}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
 }
