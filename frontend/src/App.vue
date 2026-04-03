@@ -9,9 +9,10 @@
   import Video from './pages/video/video.vue';
   import { useEventListener } from '@vueuse/core';
   import { useFullscreen } from '@vueuse/core';
+  import Loop from './pages/loop/loop.vue';
 
   const navigation = useNavigation();
-  const onIndex = () => navigation.transitionTo(undefined);
+  const onLoop = () => navigation.transitionTo({ component: Loop, props: {} });
   const onVideo = () => navigation.transitionTo({ component: Video, props: {} });
   const onDevices = () => navigation.transitionTo({ component: Devices, props: {} });
   const onCamera = () => navigation.transitionTo({ component: Camera, props: {} });
@@ -26,7 +27,7 @@
 <template>
   <div :class="$style.app">
     <div :class="$style.header">
-      <Button label="Index" :on-click="onIndex" />
+      <Button label="Loop" :on-click="onLoop" />
       <Button label="Video" :on-click="onVideo" />
       <Button label="Devices" :on-click="onDevices" />
       <Button label="Camera" :on-click="onCamera" />

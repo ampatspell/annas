@@ -1,8 +1,10 @@
-import { computed, inject, shallowRef, type InjectionKey, type Plugin } from 'vue';
-import type { ComponentWithProps } from './component';
+import { computed, inject, shallowRef, type InjectionKey, type Plugin } from "vue";
+import type { ComponentWithProps } from "./component";
 
-const createNavigation = () => {
-  const page = shallowRef<ComponentWithProps>();
+export type NavigationOptions = { initial: ComponentWithProps };
+
+const createNavigation = (opts: NavigationOptions) => {
+  const page = shallowRef<ComponentWithProps | undefined>(opts.initial);
 
   const transitionTo = (target: ComponentWithProps | undefined) => {
     page.value = target;
@@ -16,11 +18,11 @@ const createNavigation = () => {
 
 export type UsedNavigation = ReturnType<typeof createNavigation>;
 
-const key: InjectionKey<UsedNavigation> = Symbol('navigation');
+const key: InjectionKey<UsedNavigation> = Symbol("navigation");
 
-export const createNavigationPlugin = () => {
+export const createNavigationPlugin = (opts: NavigationOptions) => {
   const plugin: Plugin = (app) => {
-    app.provide(key, createNavigation());
+    app.provide(key, createNavigation(opts));
   };
   return plugin;
 };
