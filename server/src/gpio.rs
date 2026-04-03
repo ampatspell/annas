@@ -1,4 +1,4 @@
-use tokio::sync::broadcast::{Receiver, Sender, channel};
+use tokio::sync::broadcast::{Sender, channel};
 
 #[derive(Clone, Debug)]
 pub enum Pin {
@@ -22,9 +22,9 @@ pub fn create_gpio_with_channel(tx: &Sender<ChannelMessage>) {}
 #[cfg(not(target_os = "linux"))]
 pub fn create_gpio_with_channel(_tx: &Sender<ChannelMessage>) {}
 
-pub fn create_gpio() -> Receiver<ChannelMessage> {
-    let (tx, rx) = channel::<ChannelMessage>(16);
+pub fn create_gpio() -> Sender<ChannelMessage> {
+    let (tx, _) = channel::<ChannelMessage>(16);
     create_gpio_with_channel(&tx);
 
-    rx
+    tx
 }

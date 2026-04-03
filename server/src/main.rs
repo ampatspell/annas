@@ -16,7 +16,7 @@ use axum::{
 use axum_extra::{TypedHeader, headers::Range};
 use tokio::{
     net::TcpListener,
-    sync::{Mutex, broadcast::Receiver},
+    sync::{Mutex, broadcast::Sender},
 };
 use tower_http::cors::{Any, CorsLayer};
 
@@ -30,7 +30,7 @@ pub mod video;
 
 #[derive(Clone)]
 struct AppState {
-    rx: Arc<Mutex<Receiver<ChannelMessage>>>,
+    tx: Arc<Mutex<Sender<ChannelMessage>>>,
 }
 
 impl AppState {}
@@ -46,6 +46,8 @@ async fn get_video(Path(id): Path<String>, range: Option<TypedHeader<Range>>) ->
 }
 
 async fn handle_websocket(mut socket: WebSocket, state: AppState) {
+    let mut rx = state.tx.lock().await.subscribe();
+
     let text = Message::Text(format!("Hey there").into());
     match socket.send(text).await {
         Err(error) => println!("Error sending welcome {error}"),
@@ -53,7 +55,7 @@ async fn handle_websocket(mut socket: WebSocket, state: AppState) {
     }
 
     loop {
-        let message = state.rx.lock().await.recv().await;
+        let message = rx.recv().await;
         match message {
             Ok(message) => match message {
                 ChannelMessage::GPIO { gpio } => {
@@ -80,7 +82,7 @@ async fn websocket(ws: WebSocketUpgrade, State(state): State<AppState>) -> impl 
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    let rx = Arc::new(Mutex::new(create_gpio()));
+    let tx = Arc::new(Mutex::new(create_gpio()));
 
     let cors_layer = CorsLayer::new()
         .allow_methods(Any)
@@ -92,7 +94,7 @@ async fn main() {
         .route("/videos/{id}", get(get_video))
         .route("/ws", any(websocket))
         .layer(cors_layer)
-        .with_state(AppState { rx });
+        .with_state(AppState { tx });
 
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
