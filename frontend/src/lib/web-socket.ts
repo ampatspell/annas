@@ -22,7 +22,7 @@ const createWebsocket = () => {
     console.log("ws: error", e);
   });
   websocket.addEventListener("message", (e) => {
-    console.log("ws: message", e);
+    console.log("ws: message", e.data);
     subscriptions.forEach((subscription) => {
       try {
         const json = JSON.parse(e.data);

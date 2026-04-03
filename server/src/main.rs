@@ -45,7 +45,10 @@ async fn get_video(Path(id): Path<String>, range: Option<TypedHeader<Range>>) ->
 async fn handle_websocket(mut socket: WebSocket, state: AppState) {
     let mut rx = state.tx.subscribe();
 
-    let text = Message::Text(format!("Hey there").into());
+    let payload: HashMap<String, String> =
+        HashMap::from([(String::from("type"), String::from("hello"))]);
+
+    let text = Message::Text(serde_json::to_string(&payload).unwrap().into());
     match socket.send(text).await {
         Err(error) => println!("Error sending welcome {error}"),
         _ => {}

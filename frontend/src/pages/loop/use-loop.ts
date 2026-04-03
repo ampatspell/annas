@@ -4,6 +4,10 @@ import { useWebsocket } from "@/lib/web-socket";
 import { onKeyPressed } from "@vueuse/core";
 import { computed, shallowRef, watch } from "vue";
 
+const rnd = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
 const createVideo = (opts: { name: string; url: string }) => {
   const element = document.createElement("video");
   element.src = opts.url;
@@ -63,17 +67,24 @@ export const useLoop = () => {
   const video = shallowRef<LoopVideo>();
 
   const next = () => {
-    const next = videos.all.value[0];
+    const index = rnd(0, videos.all.value.length);
+    const next = videos.all.value[index]!;
     if (next) {
+      console.log(next);
       video.value = next;
     }
   };
 
-  onKeyPressed("ArrowLeft", () => {});
+  onKeyPressed("ArrowLeft", () => {}, { target: document.body });
 
-  onKeyPressed("ArrowRight", () => {
-    next();
-  });
+  onKeyPressed(
+    "ArrowRight",
+    () => {
+      console.log("next");
+      next();
+    },
+    { target: document.body },
+  );
 
   watch(videos.all, (all) => {
     if (all.length) {
