@@ -1,5 +1,0 @@
-# Vue-specific EditorConfig overrides
-# Inherits general settings from root .editorconfig
-
-[*.{vue,css,scss,sass,less,styl}]
-max_line_length = 120
