@@ -23,6 +23,6 @@
 
 <style module lang="postcss">
   .page {
-    padding: 10px;
+    padding: 40px 10px 10px 10px;
   }
 </style>

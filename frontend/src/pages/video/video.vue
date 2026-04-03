@@ -36,11 +36,17 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    position: relative;
     > .header {
+      position: absolute;
+      top: 40px;
+      left: 0;
       padding: 10px;
       display: flex;
       flex-direction: row;
       gap: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1;
       > .video {
         max-width: 100px;
         overflow: hidden;
