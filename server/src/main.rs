@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use axum::{
     Json, Router,
@@ -56,8 +56,11 @@ async fn handle_websocket(mut socket: WebSocket, state: AppState) {
         match message {
             Ok(message) => match message {
                 ChannelMessage::GPIO { gpio } => {
-                    let pin = gpio.pin;
-                    let text = Message::Text(format!("GPIO {pin:?}").into());
+                    let payload: HashMap<String, String> = HashMap::from([
+                        (String::from("type"), String::from("gpio")),
+                        (String::from("pin"), format!("{:?}", gpio.pin)),
+                    ]);
+                    let text = Message::Text(serde_json::to_string(&payload).unwrap().into());
                     match socket.send(text).await {
                         Err(error) => println!("Error sending message {error}"),
                         _ => {}
@@ -72,6 +75,7 @@ async fn handle_websocket(mut socket: WebSocket, state: AppState) {
 }
 
 async fn websocket(ws: WebSocketUpgrade, State(state): State<AppState>) -> impl IntoResponse {
+    println!("websocket");
     ws.on_upgrade(move |socket| handle_websocket(socket, state))
 }
 

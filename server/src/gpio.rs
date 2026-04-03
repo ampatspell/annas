@@ -36,22 +36,28 @@ pub fn create_gpio_with_channel(tx: &Arc<Sender<ChannelMessage>>) {
         let pins: Vec<InputPin> = [(4, Pin::Left), (6, Pin::Right)]
             .iter()
             .map(|pair| {
+                use std::time::Duration;
+
                 let pin = pair.0;
                 let name = pair.1;
                 let tx = tx.clone();
                 let mut input = Gpio::new().unwrap().get(pin).unwrap().into_input_pullup();
                 println!("{pin} {name:?}");
                 input
-                    .set_async_interrupt(Trigger::FallingEdge, None, move |event| {
-                        println!("{name:?} {event:?}");
-                        let message = ChannelMessage::GPIO {
-                            gpio: GPIO { pin: name },
-                        };
-                        match tx.send(message) {
-                            Ok(_) => println!("Sent"),
-                            Err(err) => println!("Failed to send {err}"),
-                        };
-                    })
+                    .set_async_interrupt(
+                        Trigger::FallingEdge,
+                        Some(Duration::from_millis(100)),
+                        move |event| {
+                            println!("{name:?} {event:?}");
+                            let message = ChannelMessage::GPIO {
+                                gpio: GPIO { pin: name },
+                            };
+                            match tx.send(message) {
+                                Ok(_) => println!("Sent"),
+                                Err(err) => println!("Failed to send {err}"),
+                            };
+                        },
+                    )
                     .unwrap();
 
                 input
@@ -63,9 +69,7 @@ pub fn create_gpio_with_channel(tx: &Arc<Sender<ChannelMessage>>) {
         });
 
         thread::park();
-    })
-    .join()
-    .unwrap();
+    });
 }
 
 #[cfg(not(target_os = "linux"))]
