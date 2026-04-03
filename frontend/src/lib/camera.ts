@@ -7,7 +7,7 @@ const createCamera = () => {
   const load = async () => {
     try {
       const value = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: { width: { exact: 1280 }, height: { exact: 720 } },
       });
       stream.value = value;
     } catch (err) {
