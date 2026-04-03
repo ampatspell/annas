@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { useTemplateRef } from 'vue'
   import Button from './components/button.vue'
   import Render from './components/render.vue'
   import './global.css'
@@ -6,12 +7,20 @@
   import Camera from './pages/camera/camera.vue'
   import Devices from './pages/devices/devices.vue'
   import Video from './pages/video/video.vue'
+  import { useEventListener } from '@vueuse/core'
+  import { useFullscreen } from '@vueuse/core'
 
   const navigation = useNavigation()
   const onIndex = () => navigation.transitionTo(undefined)
   const onVideo = () => navigation.transitionTo({ component: Video, props: {} })
   const onDevices = () => navigation.transitionTo({ component: Devices, props: {} })
   const onCamera = () => navigation.transitionTo({ component: Camera, props: {} })
+
+  const contentRef = useTemplateRef('contentRef')
+  const { toggle } = useFullscreen()
+  useEventListener(contentRef, 'dblclick', () => {
+    toggle()
+  })
 </script>
 
 <template>
@@ -22,7 +31,7 @@
       <Button label="Devices" :on-click="onDevices" />
       <Button label="Camera" :on-click="onCamera" />
     </div>
-    <div :class="$style.content">
+    <div :class="$style.content" ref="contentRef">
       <Render :model="navigation.page.value" />
     </div>
   </div>
