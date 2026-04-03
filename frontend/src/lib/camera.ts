@@ -1,4 +1,4 @@
-import { inject, ref, type InjectionKey, type Plugin } from "vue";
+import { inject, ref, type InjectionKey, type Plugin } from 'vue';
 
 const createCamera = () => {
   const stream = ref<MediaStream>();
@@ -26,7 +26,7 @@ const createCamera = () => {
 
 export type UsedCamera = ReturnType<typeof createCamera>;
 
-const key: InjectionKey<UsedCamera> = Symbol("camera");
+const key: InjectionKey<UsedCamera> = Symbol('camera');
 
 export const createCameraPlugin = () => {
   const plugin: Plugin = (app) => {

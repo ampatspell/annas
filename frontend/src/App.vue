@@ -1,26 +1,26 @@
 <script setup lang="ts">
-  import { useTemplateRef } from 'vue'
-  import Button from './components/button.vue'
-  import Render from './components/render.vue'
-  import './global.css'
-  import { useNavigation } from './lib/navigation'
-  import Camera from './pages/camera/camera.vue'
-  import Devices from './pages/devices/devices.vue'
-  import Video from './pages/video/video.vue'
-  import { useEventListener } from '@vueuse/core'
-  import { useFullscreen } from '@vueuse/core'
+  import { useTemplateRef } from 'vue';
+  import Button from './components/button.vue';
+  import Render from './components/render.vue';
+  import './global.css';
+  import { useNavigation } from './lib/navigation';
+  import Camera from './pages/camera/camera.vue';
+  import Devices from './pages/devices/devices.vue';
+  import Video from './pages/video/video.vue';
+  import { useEventListener } from '@vueuse/core';
+  import { useFullscreen } from '@vueuse/core';
 
-  const navigation = useNavigation()
-  const onIndex = () => navigation.transitionTo(undefined)
-  const onVideo = () => navigation.transitionTo({ component: Video, props: {} })
-  const onDevices = () => navigation.transitionTo({ component: Devices, props: {} })
-  const onCamera = () => navigation.transitionTo({ component: Camera, props: {} })
+  const navigation = useNavigation();
+  const onIndex = () => navigation.transitionTo(undefined);
+  const onVideo = () => navigation.transitionTo({ component: Video, props: {} });
+  const onDevices = () => navigation.transitionTo({ component: Devices, props: {} });
+  const onCamera = () => navigation.transitionTo({ component: Camera, props: {} });
 
-  const contentRef = useTemplateRef('contentRef')
-  const { toggle } = useFullscreen()
+  const contentRef = useTemplateRef('contentRef');
+  const { toggle } = useFullscreen();
   useEventListener(contentRef, 'dblclick', () => {
-    toggle()
-  })
+    toggle();
+  });
 </script>
 
 <template>

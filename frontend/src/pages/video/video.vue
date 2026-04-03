@@ -1,9 +1,9 @@
 <script setup lang="ts">
-  import { useVideos } from '@/lib/videos'
-  import { ref } from 'vue'
+  import { useVideos } from '@/lib/videos';
+  import { ref } from 'vue';
 
-  const videos = useVideos()
-  const id = ref<string>()
+  const videos = useVideos();
+  const id = ref<string>();
 </script>
 
 <template>

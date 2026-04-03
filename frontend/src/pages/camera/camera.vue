@@ -1,18 +1,18 @@
 <script setup lang="ts">
-  import { useCamera } from '@/lib/camera'
-  import { computed, useTemplateRef, watchEffect } from 'vue'
+  import { useCamera } from '@/lib/camera';
+  import { computed, useTemplateRef, watchEffect } from 'vue';
 
-  const camera = useCamera()
-  const stream = computed(() => camera.stream.value)
-  const error = computed(() => camera.error.value)
+  const camera = useCamera();
+  const stream = computed(() => camera.stream.value);
+  const error = computed(() => camera.error.value);
 
-  const video = useTemplateRef('video')
+  const video = useTemplateRef('video');
 
   watchEffect(() => {
     if (video.value && stream.value) {
-      video.value.srcObject = stream.value
+      video.value.srcObject = stream.value;
     }
-  })
+  });
 </script>
 
 <template>

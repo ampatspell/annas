@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
+  import { onMounted, ref } from 'vue';
 
-  const devices = ref<MediaDeviceInfo[]>()
+  const devices = ref<MediaDeviceInfo[]>();
 
   onMounted(async () => {
-    devices.value = await navigator.mediaDevices.enumerateDevices()
-  })
+    devices.value = await navigator.mediaDevices.enumerateDevices();
+  });
 </script>
 
 <template>
