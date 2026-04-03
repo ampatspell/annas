@@ -1,55 +1,39 @@
+use std::sync::Arc;
+
 use axum::{
     Json, Router,
-    extract::Path,
+    extract::{
+        Path, State, WebSocketUpgrade,
+        ws::{Message, WebSocket},
+    },
     http::{
-        HeaderValue, StatusCode,
-        header::{self, AUTHORIZATION, CONTENT_TYPE},
+        HeaderValue,
+        header::{AUTHORIZATION, CONTENT_TYPE},
     },
     response::IntoResponse,
-    routing::get,
+    routing::{any, get},
 };
 use axum_extra::{TypedHeader, headers::Range};
-use axum_range::{KnownSize, Ranged};
-use std::fs::read_dir;
-use tokio::fs::File;
+use tokio::{
+    net::TcpListener,
+    sync::{Mutex, broadcast::Receiver},
+};
 use tower_http::cors::{Any, CorsLayer};
 
-fn load_videos() -> Vec<String> {
-    let paths = read_dir("../videos").unwrap();
-    let names = paths
-        .into_iter()
-        .map(|f| f.unwrap().file_name().display().to_string())
-        .collect::<Vec<String>>();
+use crate::{
+    gpio::{ChannelMessage, create_gpio},
+    video::{get_video_stream, load_videos},
+};
 
-    names
+pub mod gpio;
+pub mod video;
+
+#[derive(Clone)]
+struct AppState {
+    rx: Arc<Mutex<Receiver<ChannelMessage>>>,
 }
 
-pub async fn get_video_stream(id: String, range: Option<TypedHeader<Range>>) -> impl IntoResponse {
-    let path = format!("../videos/{id}");
-
-    let file = match File::open(&path).await {
-        Ok(file) => file,
-        Err(err) => return Err((StatusCode::NOT_FOUND, format!("File not found: {}", err))),
-    };
-
-    let content_type = match mime_guess::from_path(&path).first_raw() {
-        Some(mime) => mime,
-        None => {
-            return Err((
-                StatusCode::BAD_REQUEST,
-                "MIME Type couldn't be determined".to_string(),
-            ));
-        }
-    };
-
-    let body = KnownSize::file(file).await.unwrap();
-    let range = range.map(|TypedHeader(range)| range);
-
-    Ok((
-        [(header::CONTENT_TYPE, content_type)],
-        Ranged::new(range, body),
-    ))
-}
+impl AppState {}
 
 async fn index() -> Json<Vec<String>> {
     let videos = load_videos();
@@ -61,9 +45,42 @@ async fn get_video(Path(id): Path<String>, range: Option<TypedHeader<Range>>) ->
     res
 }
 
+async fn handle_websocket(mut socket: WebSocket, state: AppState) {
+    let text = Message::Text(format!("Hey there").into());
+    match socket.send(text).await {
+        Err(error) => println!("Error sending welcome {error}"),
+        _ => {}
+    }
+
+    loop {
+        let message = state.rx.lock().await.recv().await;
+        match message {
+            Ok(message) => match message {
+                ChannelMessage::GPIO { gpio } => {
+                    let pin = gpio.pin;
+                    let text = Message::Text(format!("GPIO {pin:?}").into());
+                    match socket.send(text).await {
+                        Err(error) => println!("Error sending message {error}"),
+                        _ => {}
+                    }
+                }
+            },
+            Err(_) => {
+                println!("Error receiving message");
+            }
+        }
+    }
+}
+
+async fn websocket(ws: WebSocketUpgrade, State(state): State<AppState>) -> impl IntoResponse {
+    ws.on_upgrade(move |socket| handle_websocket(socket, state))
+}
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
+
+    let rx = Arc::new(Mutex::new(create_gpio()));
 
     let cors_layer = CorsLayer::new()
         .allow_methods(Any)
@@ -73,8 +90,10 @@ async fn main() {
     let app = Router::new()
         .route("/", get(index))
         .route("/videos/{id}", get(get_video))
-        .layer(cors_layer);
+        .route("/ws", any(websocket))
+        .layer(cors_layer)
+        .with_state(AppState { rx });
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
