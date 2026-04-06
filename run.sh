@@ -6,4 +6,4 @@ DISPLAY=:0 chromium \
   --autoplay-policy=no-user-gesture-required \
   --disable-infobars \
   --noerrdialogs \
-  --app="http://localhost:5173"
+  --app="http://localhost:3000"
