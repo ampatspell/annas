@@ -33,7 +33,7 @@ pub fn create_gpio_with_channel(tx: &Arc<Sender<ChannelMessage>>) {
             static PINS: OnceCell<Vec<InputPin>> = OnceCell::new();
         }
 
-        let pins: Vec<InputPin> = [(4, Pin::Left), (6, Pin::Right)]
+        let pins: Vec<InputPin> = [(4, Pin::Right), (6, Pin::Left)]
             .iter()
             .map(|pair| {
                 use std::time::Duration;
