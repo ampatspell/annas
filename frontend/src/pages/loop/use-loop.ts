@@ -90,11 +90,10 @@ export const useLoop = () => {
 
   websocket.subscribe({
     onMessage: (message) => {
-      console.log(message);
       if (message.type === "gpio") {
-        if (message.button === "Left") {
+        if (message.pin === "Left") {
           prev();
-        } else if (message.button === "Right") {
+        } else if (message.pin === "Right") {
           next();
         }
       }
@@ -138,7 +137,6 @@ export const useLoop = () => {
 
   const next = () => {
     const next = pickNext();
-    console.log("next", video);
     if (next) {
       play(next);
       addLast();

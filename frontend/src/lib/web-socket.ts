@@ -2,7 +2,7 @@ import { inject, onMounted, onUnmounted, type InjectionKey, type Plugin } from "
 
 export type Message = {
   type: "gpio";
-  button: "Left" | "Right";
+  pin: "Left" | "Right";
 };
 
 type Subscription = { onMessage: (message: Message) => void };
