@@ -38,6 +38,7 @@ const transcode = async (name: string) => {
 }
 
 let inputs = await loadInputs();
+
 for(let input of inputs) {
   await transcode(input);
 }
