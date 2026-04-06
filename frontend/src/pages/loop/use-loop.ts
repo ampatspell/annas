@@ -25,6 +25,7 @@ const createVideo = (opts: { name: string; url: string; onEnded: () => void }) =
   };
 
   const play = () => {
+    element.autoplay = true;
     element.play();
   };
 
