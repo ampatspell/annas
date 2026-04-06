@@ -122,7 +122,8 @@ export const useLoop = () => {
   };
 
   const pickNext = () => {
-    while (true) {
+    let i = 0;
+    while (i < 5) {
       const index = rnd(0, all.value.length - 1);
       const video = all.value[index]!;
       if (video) {
@@ -132,6 +133,7 @@ export const useLoop = () => {
       } else {
         return;
       }
+      i++;
     }
   };
 

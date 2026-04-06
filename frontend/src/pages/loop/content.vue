@@ -23,5 +23,6 @@
     justify-content: center;
     position: relative;
     width: 100%;
+    cursor: none;
   }
 </style>
