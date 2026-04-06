@@ -116,7 +116,6 @@ export const useLoop = () => {
   };
 
   const play = (next: LoopVideo) => {
-    console.log(next);
     video.value?.pause();
     video.value = next;
     next.play();
@@ -124,7 +123,7 @@ export const useLoop = () => {
 
   const pickNext = () => {
     while (true) {
-      const index = rnd(0, all.value.length);
+      const index = rnd(0, all.value.length - 1);
       const video = all.value[index]!;
       if (video) {
         if (!last.includes(video)) {
@@ -139,8 +138,8 @@ export const useLoop = () => {
   const next = () => {
     const next = pickNext();
     if (next) {
-      addLast();
       play(next);
+      addLast();
     }
   };
 
