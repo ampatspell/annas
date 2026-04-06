@@ -12,7 +12,7 @@ pub fn load_videos() -> Vec<String> {
     let names = paths
         .into_iter()
         .map(|f| f.unwrap().file_name().display().to_string())
-        .filter(|f| f != ".gitignore")
+        .filter(|f| f != ".gitignore" && f != ".DS_Store")
         .collect::<Vec<String>>();
 
     names

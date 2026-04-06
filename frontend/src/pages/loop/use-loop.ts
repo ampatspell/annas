@@ -145,7 +145,6 @@ export const useLoop = () => {
 
   const prev = () => {
     const video = last.pop();
-    console.log("prev", video);
     if (video) {
       play(video);
     } else {
