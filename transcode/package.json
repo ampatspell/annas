@@ -1,0 +1,13 @@
+{
+  "name": "transcode",
+  "version": "1.0.0",
+  "scripts": {
+    "run": "tsx ./src/index.ts"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
