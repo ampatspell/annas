@@ -8,37 +8,61 @@ const rnd = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-const createVideo = (opts: { name: string; url: string }) => {
+const createVideo = (opts: { name: string; url: string; onEnded: () => void }) => {
   const { name } = opts;
   const element = document.createElement("video");
+  element.volume = 0;
+
+  element.addEventListener("ended", () => {
+    element.currentTime = 0;
+    opts.onEnded();
+  });
+
   element.src = opts.url;
 
-  return { type: "video" as const, name, element };
+  const pause = () => {
+    element.pause();
+  };
+
+  const play = () => {
+    element.play();
+  };
+
+  return { type: "video" as const, name, element, pause, play };
 };
 
 const createCamera = (camera: UsedCamera) => {
   const stream = computed(() => camera.stream.value);
   const element = document.createElement("video");
+  element.volume = 0;
 
   watch(stream, (stream) => {
     if (stream) {
       element.srcObject = stream;
+      element.play();
     }
   });
 
-  return { type: "camera" as const, element };
+  const pause = () => {};
+  const play = () => {};
+
+  return { type: "camera" as const, element, pause, play };
 };
 
 export type LoopVideo = ReturnType<typeof createVideo> | ReturnType<typeof createCamera>;
 
-const createVideos = () => {
+const createVideos = (opts: { onEnded: () => void }) => {
   const videos = useVideos();
   const camera = useCamera();
 
   const all = computed(() => {
     return [
       ...videos.index.value.map((name) => {
-        return createVideo({ name, url: videos.urlFor(name) });
+        return createVideo({
+          name,
+          url: videos.urlFor(name),
+          onEnded: () => opts.onEnded(),
+        });
       }),
       createCamera(camera),
     ];
@@ -55,11 +79,23 @@ const createVideos = () => {
 export const useLoop = () => {
   const websocket = useWebsocket();
 
-  const videos = createVideos();
+  const videos = createVideos({
+    onEnded: () => {
+      next();
+    },
+  });
+
+  const all = videos.all;
 
   websocket.subscribe({
     onMessage: (message) => {
-      console.log(message);
+      if (message.type === "gpio") {
+        if (message.button === "Left") {
+          prev();
+        } else if (message.button === "Right") {
+          next();
+        }
+      }
     },
   });
 
@@ -67,21 +103,59 @@ export const useLoop = () => {
 
   const video = shallowRef<LoopVideo>();
 
-  const prev = () => {};
+  const last: LoopVideo[] = [];
+
+  const addLast = () => {
+    if (last.length > 3) {
+      last.shift();
+    }
+    if (video.value) {
+      last.push(video.value);
+    }
+  };
+
+  const play = (next: LoopVideo) => {
+    console.log(next);
+    video.value?.pause();
+    video.value = next;
+    next.play();
+  };
+
+  const pickNext = () => {
+    while (true) {
+      const index = rnd(0, all.value.length);
+      const video = all.value[index]!;
+      if (video) {
+        if (!last.includes(video)) {
+          return video;
+        }
+      } else {
+        return;
+      }
+    }
+  };
 
   const next = () => {
-    const index = rnd(0, videos.all.value.length);
-    const next = videos.all.value[index]!;
+    const next = pickNext();
     if (next) {
-      console.log(next);
-      video.value = next;
+      addLast();
+      play(next);
+    }
+  };
+
+  const prev = () => {
+    const video = last.pop();
+    if (video) {
+      play(video);
+    } else {
+      next();
     }
   };
 
   onKeyStroke("ArrowLeft", () => prev());
   onKeyStroke("ArrowRight", () => next());
 
-  watch(videos.all, (all) => {
+  watch(all, (all) => {
     if (all.length) {
       next();
     }
@@ -90,6 +164,7 @@ export const useLoop = () => {
   return {
     isLoaded,
     video,
+    all,
   };
 };
 
