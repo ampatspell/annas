@@ -138,6 +138,7 @@ export const useLoop = () => {
 
   const next = () => {
     const next = pickNext();
+    console.log("next", video);
     if (next) {
       play(next);
       addLast();
@@ -146,6 +147,7 @@ export const useLoop = () => {
 
   const prev = () => {
     const video = last.pop();
+    console.log("prev", video);
     if (video) {
       play(video);
     } else {
