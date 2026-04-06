@@ -15,7 +15,7 @@ use axum::{
 };
 use axum_extra::{TypedHeader, headers::Range};
 use tokio::{net::TcpListener, sync::broadcast::Sender};
-use tower_http::cors::{Any, CorsLayer};
+use tower_http::{cors::{Any, CorsLayer}, services::{ServeDir, ServeFile}};
 
 use crate::{
     gpio::{ChannelMessage, create_gpio},
@@ -32,7 +32,7 @@ struct AppState {
 
 impl AppState {}
 
-async fn index() -> Json<Vec<String>> {
+async fn get_videos() -> Json<Vec<String>> {
     let videos = load_videos();
     Json(videos)
 }
@@ -81,6 +81,11 @@ async fn websocket(ws: WebSocketUpgrade, State(state): State<AppState>) -> impl 
     ws.on_upgrade(move |socket| handle_websocket(socket, state))
 }
 
+fn serve_webapp() -> ServeDir<tower_http::set_status::SetStatus<ServeFile>> {
+    let base = "../frontend/dist";
+    ServeDir::new(&base).not_found_service(ServeFile::new(format!("{base}/index.html")))
+}
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt::init();
@@ -92,11 +97,14 @@ async fn main() {
         .allow_origin("*".parse::<HeaderValue>().unwrap())
         .allow_headers([AUTHORIZATION, CONTENT_TYPE]);
 
+    let webapp = serve_webapp();
+
     let app = Router::new()
-        .route("/videos", get(index))
+        .route("/videos", get(get_videos))
         .route("/videos/{id}", get(get_video))
         .route("/ws", any(websocket))
         .layer(cors_layer)
+        .fallback_service(webapp)
         .with_state(AppState { tx });
 
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
