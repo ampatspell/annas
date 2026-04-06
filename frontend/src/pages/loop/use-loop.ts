@@ -90,6 +90,7 @@ export const useLoop = () => {
 
   websocket.subscribe({
     onMessage: (message) => {
+      console.log(message);
       if (message.type === "gpio") {
         if (message.button === "Left") {
           prev();
