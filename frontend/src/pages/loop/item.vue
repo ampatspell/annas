@@ -8,12 +8,12 @@
 
   let inserted: HTMLElement | undefined;
   watch(
-    [() => props.video, itemRef],
-    ([next, item]) => {
+    [() => props.video, itemRef, () => props.isCurrent],
+    ([next, item, isCurrent]) => {
       if (inserted) {
         inserted.remove();
       }
-      if (next && item) {
+      if (next && item && isCurrent) {
         const el = next.element;
         item.appendChild(el);
         inserted = el;

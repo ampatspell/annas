@@ -22,15 +22,7 @@ const transcode = async (name: string) => {
   await mkdir(OUTPUT, { recursive: true });
 
   return new Promise<void>((resolve) => {
-    const process = spawn('ffmpeg', [
-      `-i`,
-      input,
-      `-vf`,
-      `scale=1280:720::-1`,
-      `-c:a`,
-      `copy`,
-      output,
-    ], { stdio: 'inherit' });
+    const process = spawn(join(__dirname, 'run.sh'), [input, output], { stdio: 'inherit' });
     process.addListener('exit', () => {
       resolve();
     });
@@ -39,6 +31,9 @@ const transcode = async (name: string) => {
 
 let inputs = await loadInputs();
 
-for(let input of inputs) {
-  await transcode(input);
-}
+// for(let input of inputs) {
+//   await transcode(input);
+// }
+
+
+await transcode('IMG_4292.mp4');
