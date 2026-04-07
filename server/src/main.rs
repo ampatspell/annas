@@ -15,15 +15,20 @@ use axum::{
 };
 use axum_extra::{TypedHeader, headers::Range};
 use tokio::{net::TcpListener, sync::broadcast::Sender};
-use tower_http::{cors::{Any, CorsLayer}, services::{ServeDir, ServeFile}};
+use tower_http::{
+    cors::{Any, CorsLayer},
+    services::{ServeDir, ServeFile},
+};
 
 use crate::{
     gpio::{ChannelMessage, create_gpio},
     video::{get_video_stream, load_videos},
+    webcam::create_webcam,
 };
 
 pub mod gpio;
 pub mod video;
+pub mod webcam;
 
 #[derive(Clone)]
 struct AppState {
@@ -91,6 +96,7 @@ async fn main() {
     tracing_subscriber::fmt::init();
 
     let tx = create_gpio();
+    create_webcam();
 
     let cors_layer = CorsLayer::new()
         .allow_methods(Any)
