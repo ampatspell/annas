@@ -8,7 +8,7 @@ const createCamera = () => {
   element.muted = true;
 
   const jmuxer = new JMuxer({
-    node: "stream",
+    node: element,
     mode: "video",
     flushingTime: 0,
     fps: 30,
