@@ -27,7 +27,6 @@
     <div :class="$style.header">
       <Button label="Loop" :on-click="onLoop" />
       <Button label="Video" :on-click="onVideo" />
-      <Button label="Devices" :on-click="onDevices" />
       <Button label="Camera" :on-click="onCamera" />
     </div>
     <div :class="$style.content" ref="contentRef">
