@@ -1,0 +1,11 @@
+{
+  "name": "annas",
+  "version": "1.0.0",
+  "scripts": {
+    "build:frontend": "(cd frontend && npm run build)",
+    "build:server": "(cd server && cargo build)",
+    "build": "npm run build:frontend && npm run build:server",
+    "start:server": "(cd server && cargo run)",
+    "start": "npm run build && npm run start:server"
+  }
+}

@@ -1,10 +1,10 @@
-use std::{
-    process::Command,
-    thread::{self, spawn},
-    time::Duration,
-};
-
+#[cfg(target_os = "linux")]
 pub fn create_webcam() {
+    use std::{
+        process::Command,
+        thread::{self, spawn},
+        time::Duration,
+    };
     spawn(|| {
         loop {
             let _ = Command::new("python3")
@@ -17,3 +17,6 @@ pub fn create_webcam() {
         }
     });
 }
+
+#[cfg(not(target_os = "linux"))]
+pub fn create_webcam() {}

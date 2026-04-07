@@ -1,4 +1,5 @@
 import { inject, onMounted, onUnmounted, type InjectionKey, type Plugin } from "vue";
+import { WEBSOCKET_URL } from "./url";
 
 export type Message = {
   type: "gpio";
@@ -10,8 +11,7 @@ type Subscription = { onMessage: (message: Message) => void };
 const createWebsocket = () => {
   let subscriptions: Subscription[] = [];
 
-  const websocket = new WebSocket("ws://127.0.0.1:3000/ws");
-
+  const websocket = new WebSocket(WEBSOCKET_URL);
   websocket.addEventListener("open", () => {
     console.log("ws: opened");
   });

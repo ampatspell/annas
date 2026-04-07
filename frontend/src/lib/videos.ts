@@ -1,6 +1,5 @@
 import { computed, onMounted, ref } from "vue";
-
-const URL = "http://localhost:3000/videos";
+import { VIDEOS_URL } from "./url";
 
 export const useVideos = () => {
   const isLoaded = ref(false);
@@ -10,7 +9,7 @@ export const useVideos = () => {
 
   const loadIndex = async () => {
     try {
-      const res = await fetch(URL, { method: "GET" });
+      const res = await fetch(VIDEOS_URL, { method: "GET" });
       const json = await res.json();
       isLoaded.value = true;
       index.value = json;
@@ -25,7 +24,7 @@ export const useVideos = () => {
   });
 
   const urlFor = (name: string) => {
-    return `${URL}/${name}`;
+    return `${VIDEOS_URL}/${name}`;
   };
 
   return {
