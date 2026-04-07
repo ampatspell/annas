@@ -1,30 +1,19 @@
 <script setup lang="ts">
   import { useCamera } from '@/lib/camera';
-  import { computed, useTemplateRef, watchEffect } from 'vue';
+  import { useTemplateRef, watchEffect } from 'vue';
 
   const camera = useCamera();
-  const stream = computed(() => camera.stream.value);
-  const error = computed(() => camera.error.value);
-
-  const video = useTemplateRef('video');
+  const pageRef = useTemplateRef('pageRef');
 
   watchEffect(() => {
-    if (video.value && stream.value) {
-      video.value.srcObject = stream.value;
+    if (pageRef.value) {
+      pageRef.value.appendChild(camera.element);
     }
   });
 </script>
 
 <template>
-  <div :class="$style.page">
-    <template v-if="error"> Error: {{ error }} </template>
-    <template v-else-if="stream">
-      <div :class="$style.video">
-        <video ref="video" muted autoPlay />
-      </div>
-    </template>
-    <template v-else> Loading… </template>
-  </div>
+  <div :class="$style.page" ref="pageRef"></div>
 </template>
 
 <style module lang="postcss">

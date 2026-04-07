@@ -1,32 +1,35 @@
-import { inject, ref, type InjectionKey, type Plugin } from 'vue';
+import JMuxer from "jmuxer";
+import { inject, type InjectionKey, type Plugin } from "vue";
+import { WEBCAM_URL } from "./url";
 
 const createCamera = () => {
-  const stream = ref<MediaStream>();
-  const error = ref<unknown>();
+  const element = document.createElement("video");
+  element.autoplay = true;
+  element.muted = true;
 
-  const load = async () => {
-    try {
-      const value = await navigator.mediaDevices.getUserMedia({
-        video: { width: { exact: 1280 }, height: { exact: 720 } },
-      });
-      stream.value = value;
-    } catch (err) {
-      console.log(err);
-      error.value = err;
-    }
-  };
+  const jmuxer = new JMuxer({
+    node: "stream",
+    mode: "video",
+    flushingTime: 0,
+    fps: 30,
+    debug: false,
+  });
 
-  load();
+  const ws = new WebSocket(WEBCAM_URL);
+  ws.binaryType = "arraybuffer";
+  ws.addEventListener("message", (e) => {
+    const video = new Uint8Array(e.data);
+    jmuxer.feed({
+      video,
+    });
+  });
 
-  return {
-    stream,
-    error,
-  };
+  return { element };
 };
 
 export type UsedCamera = ReturnType<typeof createCamera>;
 
-const key: InjectionKey<UsedCamera> = Symbol('camera');
+const key: InjectionKey<UsedCamera> = Symbol("camera");
 
 export const createCameraPlugin = () => {
   const plugin: Plugin = (app) => {
