@@ -33,7 +33,7 @@ const createVideo = (opts: { name: string; url: string; onEnded: () => void }) =
 };
 
 const createCamera = (camera: UsedCamera) => {
-  const element = computed(() => camera.element);
+  const element = camera.element;
 
   const pause = () => {};
   const play = () => {};
