@@ -9,11 +9,13 @@
   import { useEventListener } from '@vueuse/core';
   import { useFullscreen } from '@vueuse/core';
   import Loop from './pages/loop/loop.vue';
+  import Motion from './pages/motion/motion.vue';
 
   const navigation = useNavigation();
   const onLoop = () => navigation.transitionTo({ component: Loop, props: {} });
   const onVideo = () => navigation.transitionTo({ component: Video, props: {} });
   const onCamera = () => navigation.transitionTo({ component: Camera, props: {} });
+  const onMotion = () => navigation.transitionTo({ component: Motion, props: {} });
 
   const contentRef = useTemplateRef('contentRef');
   const { toggle } = useFullscreen();
@@ -28,6 +30,7 @@
       <Button label="Loop" :on-click="onLoop" />
       <Button label="Video" :on-click="onVideo" />
       <Button label="Camera" :on-click="onCamera" />
+      <Button label="Motion" :on-click="onMotion" />
     </div>
     <div :class="$style.content" ref="contentRef">
       <Render :model="navigation.page.value" />
