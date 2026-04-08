@@ -6,7 +6,8 @@ use tokio::sync::broadcast::{Sender, channel};
 pub enum Pin {
     Left,
     Right,
-    Motion,
+    MotionUp,
+    MotionDown,
 }
 
 #[derive(Clone, Debug)]
@@ -41,15 +42,19 @@ pub fn create_gpio_with_channel(tx: &Arc<Sender<ChannelMessage>>) {
             .set_async_interrupt(Trigger::Both, None, move |event| {
                 let trigger = event.trigger;
                 println!("Motion {trigger:?}");
-                if trigger == Trigger::RisingEdge {
-                    let message = ChannelMessage::GPIO {
-                        gpio: GPIO { pin: Pin::Motion },
-                    };
-                    match motion_tx.send(message) {
-                        Ok(_) => println!("Sent"),
-                        Err(err) => println!("Failed to send {err}"),
-                    };
-                }
+                let message = ChannelMessage::GPIO {
+                    gpio: GPIO {
+                        pin: if trigger == Trigger::RisingEdge {
+                            Pin::MotionUp
+                        } else {
+                            Pin::MotionDown
+                        },
+                    },
+                };
+                match motion_tx.send(message) {
+                    Ok(_) => println!("Sent"),
+                    Err(err) => println!("Failed to send {err}"),
+                };
             })
             .unwrap();
 
