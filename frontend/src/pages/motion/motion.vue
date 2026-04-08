@@ -3,17 +3,16 @@
   import { ref } from 'vue';
 
   const show = ref(false);
-  let cancel: ReturnType<typeof setTimeout>;
 
   const websocket = useWebsocket();
   websocket.subscribe({
     onMessage: (message) => {
-      if (message.type === 'gpio' && message.pin === 'Motion') {
-        clearTimeout(cancel);
-        show.value = true;
-        cancel = setTimeout(() => {
+      if (message.type === 'gpio') {
+        if (message.pin === 'MotionUp') {
+          show.value = true;
+        } else if (message.pin === 'MotionDown') {
           show.value = false;
-        }, 1000);
+        }
       }
     },
   });
