@@ -33,7 +33,7 @@
     align-items: center;
     justify-content: center;
     > .state {
-      font-size: 21px;
+      font-size: 100px;
       font-weight: 500;
     }
   }
