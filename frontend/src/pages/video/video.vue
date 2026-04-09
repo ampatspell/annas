@@ -45,7 +45,8 @@
       display: flex;
       flex-direction: row;
       gap: 4px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.1);
+      color: #fff;
       z-index: 1;
       > .video {
         max-width: 100px;

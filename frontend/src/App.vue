@@ -43,13 +43,14 @@
     position: relative;
     > .header {
       position: absolute;
+      bottom: 0;
       padding: 10px;
       display: flex;
       flex-direction: row;
       gap: 8px;
       z-index: 1;
       background: rgba(255, 255, 255, 0.1);
-      border-bottom-right-radius: 4px;
+      border-top-right-radius: 4px;
       opacity: 0;
       &:hover {
         opacity: 1;
