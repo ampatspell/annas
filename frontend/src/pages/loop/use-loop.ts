@@ -37,6 +37,7 @@ const createVideo = (opts: { name: string; url: string; onEnded: () => void }) =
 
 const createCamera = (camera: UsedCamera) => {
   const element = camera.element;
+  element.style = 'transform: rotate(180deg)';
 
   const pause = () => {};
   const play = () => {};
