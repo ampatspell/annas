@@ -44,7 +44,7 @@ const createCamera = (camera: UsedCamera) => {
   const pause = () => {};
   const play = () => {};
 
-  return { type: "camera" as const, element, pause, play };
+  return { type: "camera" as const, name: "camera", element, pause, play };
 };
 
 export type LoopVideo = ReturnType<typeof createVideo> | ReturnType<typeof createCamera>;
@@ -100,14 +100,14 @@ export const useLoop = () => {
   const isLoaded = computed(() => videos.isLoaded.value);
 
   const video = shallowRef<LoopVideo>();
-
   const last: LoopVideo[] = [];
+  const max = 1000;
 
   const addLast = () => {
-    if (last.length > 3) {
-      last.shift();
-    }
     if (video.value) {
+      if (last.length > max) {
+        last.shift();
+      }
       last.push(video.value);
     }
   };
@@ -116,19 +116,16 @@ export const useLoop = () => {
     video.value?.pause();
     video.value = next;
     next.play();
+    console.log("curr", next.name);
   };
 
   const pickNext = () => {
     let i = 0;
     while (i < 5) {
-      const index = rnd(0, all.value.length - 1);
-      const video = all.value[index]!;
-      if (video) {
-        if (!last.includes(video)) {
-          return video;
-        }
-      } else {
-        return;
+      const index = rnd(0, all.value.length);
+      const video = all.value[index];
+      if (video && video !== last[last.length - 1]) {
+        return video;
       }
       i++;
     }
@@ -137,8 +134,8 @@ export const useLoop = () => {
   const next = () => {
     const next = pickNext();
     if (next) {
-      play(next);
       addLast();
+      play(next);
     }
   };
 
@@ -146,8 +143,6 @@ export const useLoop = () => {
     const video = last.pop();
     if (video) {
       play(video);
-    } else {
-      next();
     }
   };
 
@@ -156,6 +151,14 @@ export const useLoop = () => {
 
   watch(all, (all) => {
     if (all.length) {
+      Array(max / 2)
+        .fill(0)
+        .forEach(() => {
+          const video = pickNext();
+          if (video) {
+            last.push(video);
+          }
+        });
       next();
     }
   });
