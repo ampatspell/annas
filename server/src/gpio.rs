@@ -34,7 +34,7 @@ pub fn create_gpio_with_channel(tx: &Arc<Sender<ChannelMessage>>) {
             static LEDS: OnceCell<Vec<OutputPin>> = OnceCell::new();
         }
 
-        let pins: Vec<OutputPin> = [23, 25]
+        let pins: Vec<OutputPin> = [2, 3, 27, 22, 10, 9, 11, 5, 6, 13, 19, 26, 21, 20, 16]
             .iter()
             .map(|pin| {
                 let mut output = Gpio::new().unwrap().get(*pin as u8).unwrap().into_output();
