@@ -76,7 +76,7 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: #000;
   font-optical-sizing: auto;
 }
 

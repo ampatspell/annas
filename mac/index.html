@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Annas</title>
+
+    <style>
+      body {
+        background: #000;
+        color: #fff;
+        font-family: monospace;
+        height: 100vh;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
+      .message {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: center;
+      }
+      .message > .line {
+        font-size: calc(100vw / 20);
+      }
+      .message > .status {
+        font-size: calc(100vw / 30);
+      }
+    </style>
+
+  </head>
+  <body>
+    <div class="message">
+      <div class="line">Waiting for Raspberry Pi…</div>
+      <div class="status"></div>
+    </h1>
+    <script>
+      const runtime = async () => {
+
+        const setStatus = (message) => {
+          const el = document.querySelector('.status');
+          if(el) {
+            el.textContent = message;
+          }
+        }
+
+        const url = 'http://kluciitis.local:3000';
+
+        const loadVideoIndex = async () => {
+          try {
+            const res = await fetch(`${url}/videos`);
+            if(res.status === 200) {
+              const json = await res.json();
+              return Array.isArray(json);
+            } else {
+              setStatus(res.statusText);
+            }
+          } catch(err) {
+            console.error(err);
+            setStatus(String(err));
+          }
+          return false;
+        }
+
+        const loop = async () => {
+          while(true) {
+            if(await loadVideoIndex()) {
+              return;
+            }
+            await new Promise((resolve) => {
+              setTimeout(() => resolve(), 5000);
+            });
+          }
+        }
+
+        await loop();
+
+        window.location = url;
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        runtime();
+      });
+    </script>
+  </body>
+</html>
