@@ -124,7 +124,7 @@ export const useLoop = () => {
       play(video);
       index++;
     } else {
-      video = pick();
+      video = pick(history[index]);
       if (video) {
         play(video);
         history.push(video);
@@ -139,7 +139,7 @@ export const useLoop = () => {
       play(video);
       index--;
     } else {
-      video = pick();
+      video = pick(history[index]);
       if (video) {
         play(video);
         history.unshift(video);
