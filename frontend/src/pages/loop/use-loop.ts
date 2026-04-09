@@ -8,7 +8,7 @@ import { computed, shallowRef, watch } from "vue";
 const createVideo = (opts: { name: string; url: string; onEnded: () => void }) => {
   const { name } = opts;
   const element = document.createElement("video");
-  element.volume = 0;
+  element.volume = 1;
 
   element.addEventListener("ended", () => {
     element.currentTime = 0;
@@ -97,17 +97,8 @@ export const useLoop = () => {
   const isLoaded = computed(() => videos.isLoaded.value);
 
   const video = shallowRef<LoopVideo>();
-  const last: LoopVideo[] = [];
-  const max = 10000;
-
-  const addLast = () => {
-    if (video.value) {
-      if (last.length > max) {
-        last.shift();
-      }
-      last.push(video.value);
-    }
-  };
+  const history: LoopVideo[] = [];
+  let index = 0;
 
   const play = (next: LoopVideo) => {
     video.value?.pause();
@@ -115,12 +106,12 @@ export const useLoop = () => {
     next.play();
   };
 
-  const pickNext = () => {
+  const pick = (except?: LoopVideo) => {
     let i = 0;
     while (i < 5) {
       const index = rnd(0, all.value.length);
       const video = all.value[index];
-      if (video && video !== last[last.length - 1]) {
+      if (video && video !== except) {
         return video;
       }
       i++;
@@ -128,17 +119,31 @@ export const useLoop = () => {
   };
 
   const next = () => {
-    const next = pickNext();
-    if (next) {
-      addLast();
-      play(next);
+    let video = history[index + 1];
+    if (video) {
+      play(video);
+      index++;
+    } else {
+      video = pick();
+      if (video) {
+        play(video);
+        history.push(video);
+        index++;
+      }
     }
   };
 
   const prev = () => {
-    const video = last.pop();
+    let video = history[index - 1];
     if (video) {
       play(video);
+      index--;
+    } else {
+      video = pick();
+      if (video) {
+        play(video);
+        history.unshift(video);
+      }
     }
   };
 
@@ -147,16 +152,9 @@ export const useLoop = () => {
 
   watch(all, (all) => {
     if (all.length) {
-      last.length = 0;
-      Array(max / 2)
-        .fill(0)
-        .forEach(() => {
-          const video = pickNext();
-          if (video) {
-            last.push(video);
-          }
-        });
-      next();
+      const video = pick()!;
+      play(video);
+      history.push(video);
     }
   });
 
