@@ -30,7 +30,6 @@ const createCamera = () => {
 
   const onError = (ws: WebSocket) => {
     if (ws === current) {
-      jmuxer.reset();
       current = build();
     }
   };
