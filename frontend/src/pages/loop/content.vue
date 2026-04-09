@@ -2,8 +2,22 @@
   import { guidFor } from '@/lib/guid';
   import Item from './item.vue';
   import type { UsedLoop } from './use-loop';
+  import { computed, watch } from 'vue';
+  import { mins } from '@/lib/utils';
 
-  defineProps<{ loop: UsedLoop }>();
+  const props = defineProps<{ loop: UsedLoop }>();
+
+  const current = computed(() => props.loop.video.value);
+
+  let cancel: Parameters<typeof clearTimeout>[0] | undefined;
+  watch(current, (video) => {
+    clearTimeout(cancel);
+    if (video?.type === 'camera') {
+      cancel = setTimeout(() => {
+        props.loop.next();
+      }, mins(1));
+    }
+  });
 </script>
 
 <template>

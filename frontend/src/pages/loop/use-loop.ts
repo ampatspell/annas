@@ -29,7 +29,13 @@ const createVideo = (opts: { name: string; url: string; onEnded: () => void }) =
     element.play().catch(() => {});
   };
 
-  return { type: "video" as const, name, element, pause, play };
+  return {
+    type: "video" as const,
+    name,
+    element,
+    pause,
+    play,
+  };
 };
 
 const createCamera = (camera: UsedCamera) => {
@@ -158,6 +164,7 @@ export const useLoop = () => {
     isLoaded,
     video,
     all,
+    next,
   };
 };
 
