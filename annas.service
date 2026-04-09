@@ -1,0 +1,15 @@
+# Contents of /etc/systemd/system/annas.service
+
+[Unit]
+Description=Annas
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/home/niklavs/src/annas/run.sh
+Environment=HOME=/home/niklavs
+Environment=PATH=/home/niklavs/.nvm/versions/node/v24.14.1/bin:/home/niklavs/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games
+
+[Install]
+WantedBy=multi-user.target

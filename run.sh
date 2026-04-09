@@ -1,3 +1,6 @@
-#! /bin/bash
+#!/bin/sh
 
-nvm use && npm start >> ./annas.log
+echo "Starting annas…"
+cd /home/niklavs/src/annas
+. "$HOME/.cargo/env"
+npm start

@@ -14,3 +14,12 @@ sudo modprobe bcm2835-v4l2
 git clone git@github.com:ampatspell/annas.git
 scp *.mp4 kluciitis:/home/niklavs/Desktop/annas/videos
 ```
+
+```
+sudo cp ./annas.service /etc/systemd/system
+sudo systemctl daemon-reload
+sudo systemctl enable annas
+sudo systemctl start annas
+sudo systemctl status annas
+sudo journalctl -f -u annas
+```
