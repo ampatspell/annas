@@ -26,12 +26,26 @@ pub fn create_gpio_with_channel(tx: &Arc<Sender<ChannelMessage>>) {
     let tx = tx.clone();
 
     thread::spawn(move || {
-        use rpi_pal::gpio::InputPin;
+        use rpi_pal::gpio::{InputPin, OutputPin};
         use std::cell::OnceCell;
 
         thread_local! {
             static PINS: OnceCell<Vec<InputPin>> = OnceCell::new();
+            static LEDS: OnceCell<Vec<OutputPin>> = OnceCell::new();
         }
+
+        let pins: Vec<OutputPin> = [23, 25]
+            .iter()
+            .map(|pin| {
+                let mut output = Gpio::new().unwrap().get(*pin as u8).unwrap().into_output();
+                output.set_high();
+                output
+            })
+            .collect();
+
+        LEDS.with(|leds| {
+            leds.set(pins).unwrap();
+        });
 
         let pins: Vec<InputPin> = [(4, Pin::Left), (17, Pin::Right)]
             .iter()
