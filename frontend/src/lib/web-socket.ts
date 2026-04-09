@@ -33,6 +33,7 @@ export const buildWebsocket = (opts: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const message = (e: MessageEvent<any>) => {
     console.log("ws: message", e.data);
+    opts.onEvent(e);
   };
   const onError = async () => {
     websocket.removeEventListener("open", open);
