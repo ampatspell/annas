@@ -101,7 +101,7 @@ export const useLoop = () => {
 
   const video = shallowRef<LoopVideo>();
   const last: LoopVideo[] = [];
-  const max = 1000;
+  const max = 10000;
 
   const addLast = () => {
     if (video.value) {
@@ -116,7 +116,6 @@ export const useLoop = () => {
     video.value?.pause();
     video.value = next;
     next.play();
-    console.log("curr", next.name);
   };
 
   const pickNext = () => {
@@ -151,6 +150,7 @@ export const useLoop = () => {
 
   watch(all, (all) => {
     if (all.length) {
+      last.length = 0;
       Array(max / 2)
         .fill(0)
         .forEach(() => {
