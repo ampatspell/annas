@@ -3,7 +3,7 @@ import { WEBSOCKET_URL } from "./url";
 
 export type Message = {
   type: "gpio";
-  pin: "Left" | "Right" | "MotionUp" | "MotionDown";
+  pin: "Left" | "Right";
 };
 
 type Subscription = { onMessage: (message: Message) => void };
