@@ -1,5 +1,9 @@
 export const mins = (m: number) => 60 * 1000 * m;
 
+export const rnd = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
 export const buildWebsocket = (opts: {
   url: string;
   binaryType?: BinaryType;

@@ -1,12 +1,9 @@
 import { useCamera, type UsedCamera } from "@/lib/camera";
+import { rnd } from "@/lib/utils";
 import { useVideos } from "@/lib/videos";
 import { useWebsocket } from "@/lib/web-socket";
 import { onKeyStroke } from "@vueuse/core";
 import { computed, shallowRef, watch } from "vue";
-
-const rnd = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-};
 
 const createVideo = (opts: { name: string; url: string; onEnded: () => void }) => {
   const { name } = opts;
