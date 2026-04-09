@@ -1,6 +1,7 @@
 import JMuxer from "jmuxer";
 import { inject, type InjectionKey, type Plugin } from "vue";
 import { WEBCAM_URL } from "./url";
+import { buildWebsocket } from "./web-socket";
 
 const createCamera = () => {
   const element = document.createElement("video");
@@ -15,14 +16,26 @@ const createCamera = () => {
     debug: false,
   });
 
-  const ws = new WebSocket(WEBCAM_URL);
-  ws.binaryType = "arraybuffer";
-  ws.addEventListener("message", (e) => {
+  const build = () => {
+    return buildWebsocket({ onEvent, onError, url: WEBCAM_URL, binaryType: "arraybuffer" });
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onEvent = (e: MessageEvent<any>) => {
     const video = new Uint8Array(e.data);
     jmuxer.feed({
       video,
     });
-  });
+  };
+
+  const onError = (ws: WebSocket) => {
+    if (ws === current) {
+      jmuxer.reset();
+      current = build();
+    }
+  };
+
+  let current = build();
 
   return { element };
 };
