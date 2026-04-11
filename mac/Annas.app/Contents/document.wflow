@@ -59,7 +59,7 @@
 				<key>ActionParameters</key>
 				<dict>
 					<key>COMMAND_STRING</key>
-					<string>/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --start-fullscreen ~/src/rust/annas/mac/index.html</string>
+					<string>/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --start-fullscreen --disable-session-crashed-bubble ~/src/rust/annas/mac/index.html</string>
 					<key>CheckedForUserDefaultShell</key>
 					<true/>
 					<key>inputMethod</key>
